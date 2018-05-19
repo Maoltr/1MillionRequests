@@ -64,14 +64,12 @@ func NewWorker(workerPool chan chan Job) Worker {
 func (w Worker) Start() {
 	go func() {
 		for {
-			// register the current worker into the worker queue.
 			w.WorkerPool <- w.JobChannel
+
 			select {
 			case job := <-w.JobChannel:
-				// we have received a work request.
 				job.Foo.do(w.Client)
 			case <-w.quit:
-				// we have received a signal to stop
 				return
 			}
 		}
@@ -128,19 +126,6 @@ func main() {
 	}
 
 	fmt.Println(time.Now())
-}
-
-func send(client http.Client, foo *Foo) {
-
-	var jsonStr, err = json.Marshal(foo)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-
 }
 
 type Dispatcher struct {
