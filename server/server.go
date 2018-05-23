@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"encoding/json"
 	"fmt"
+	"sync/atomic"
 )
 
 var (
 	MaxWorkers = 0
 	MaxQueue   = 0
-	count      = 0
+	count      uint64
 	id         = 0
 )
 
@@ -25,7 +26,7 @@ type Job struct {
 
 func (f *Foo) do() {
 	log.Println(f, count)
-	count ++
+	atomic.AddUint64(&count, 1)
 }
 
 func fooHandler(rw http.ResponseWriter, req *http.Request) {
